@@ -22,7 +22,7 @@ e) **Fecha de entrega TP Final:** 29 de octubre de 2025. **Recuperación de entr
 
 ## Dataset Utilizado
 
-Para este proyecto, se utilizaron dos archivos CSV obtenidos de ... plataforma de datasets:
+Para este proyecto, se utilizaron dos archivos CSV descargados de MovieLens:
 
   * **`ratings.csv`**: Tiene las valoraciones que los usuarios fueron dando a las películas. Originalmente con 3 millones de entradas, las filtre para trabajar con los 1000 usuarios más activos y las 1000 películas más valoradas para optimizar el rendimiento.
 
@@ -100,6 +100,7 @@ En esta sección se van a presentar las métricas utilizadas para evaluar el ren
 
   * **Video Explicativo**: [Link al video] 
   * **Presentación PPT**: [Link a la presentación]
+  * **Link del dataset**: https://grouplens.org/datasets/movielens/
 
 -----
 
