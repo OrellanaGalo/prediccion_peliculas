@@ -87,7 +87,7 @@ Por defecto, tiene recomendaciones para "Star Wars: Episode IV - A New Hope (197
 
 -----
 
-## Evaluación y Métricas 📊
+## Evaluación y Métricas
 
 Para validar el rendimiento del modelo, se uso el script `evaluar_modelo.py`. Los resultados obtenidos son los siguientes:
 
