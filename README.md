@@ -4,9 +4,9 @@ Trabajo final para la materia de Inteligencia Artificial de la carrera de Ingeni
 
 ## Descripción del Proyecto
 
-Este proyecto implementa un **sistema de recomendación de películas** utilizando **filtrado colaborativo item-item**. El algoritmo recomienda películas a los usuarios basándose en la similitud con otras películas que fueron valorado positivamente en el pasado por otros usuarios.
+Este proyecto implementa un **sistema de recomendación de películas** utilizando **filtrado colaborativo item-item**. El algoritmo recomienda películas a los usuarios basándose en el parecido con otras películas que fueron valorado positivamente en el pasado por otros usuarios.
 
-La similitud entre películas se calcula utilizando la métrica de **similitud del coseno**, que determina qué tan parecidas son dos películas en función de las calificaciones que fueron recibiendo de los mismos usuarios a traves del tiempo.
+El parecido entre películas se calcula utilizando la métrica de **similitud del coseno**, que determina qué tan iguales son dos películas en función de las puntuaciones que fueron recibiendo de los mismos usuarios a traves del tiempo.
 
 -----
 
@@ -14,10 +14,10 @@ La similitud entre películas se calcula utilizando la métrica de **similitud d
 
 Para este proyecto, se usaron dos archivos CSV del dataset de [MovieLens](https://www.google.com/search?q=https://groulens.org/datasets/movielens/):
 
-  * **`ratings.csv`**: Tiene millones de calificaciones (`userId`, `movieId`, `rating`) que los usuarios han dado a las películas.
+  * **`ratings.csv`**: Tiene millones de calificaciones (`userId`, `movieId`, `rating`) que los usuarios fueron dando a las películas.
   * **`movies.csv`**: Tiene la información de las películas (`movieId`, `title`, `genres`).
 
-Para optimizar el rendimiento computacional, el dataset fue filtrado para trabajar con un subconjunto de los **1000 usuarios más activos** y las **1000 películas más valoradas**.
+Para optimizar el rendimiento, el dataset fue filtrado para trabajar con un subconjunto de los **1000 usuarios más activos** y las **1000 películas más valoradas**.
 
 Tambien por motivos de espacio, no subi los archivos del dataset al repositorio, ya que pesaban alrededor de 1gb. De todas formas se pueden descargar desde el link que deje.
 
@@ -34,7 +34,7 @@ Tambien por motivos de espacio, no subi los archivos del dataset al repositorio,
 
 ## Estructura del Proyecto
 
-El proyecto está organizado en tres scripts principales para separar las fases de entrenamiento, evaluación y uso práctico:
+El proyecto está organizado en tres scripts principales para separar las fases de entrenamiento, evaluación y uso:
 
   * **`entrenar_modelo.py`**:
 
