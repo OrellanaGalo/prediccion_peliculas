@@ -12,12 +12,14 @@ La similitud entre películas se calcula utilizando la métrica de **similitud d
 
 ## Dataset Utilizado
 
-Para este proyecto, se utilizaron dos archivos CSV del dataset de [MovieLens](https://www.google.com/search?q=https://groulens.org/datasets/movielens/):
+Para este proyecto, se usaron dos archivos CSV del dataset de [MovieLens](https://www.google.com/search?q=https://groulens.org/datasets/movielens/):
 
   * **`ratings.csv`**: Tiene millones de calificaciones (`userId`, `movieId`, `rating`) que los usuarios han dado a las películas.
   * **`movies.csv`**: Tiene la información de las películas (`movieId`, `title`, `genres`).
 
 Para optimizar el rendimiento computacional, el dataset fue filtrado para trabajar con un subconjunto de los **1000 usuarios más activos** y las **1000 películas más valoradas**.
+
+Tambien por motivos de espacio, no subi los archivos del dataset al repositorio, ya que pesaban alrededor de 1gb. De todas formas se pueden descargar desde el link que deje.
 
 -----
 
