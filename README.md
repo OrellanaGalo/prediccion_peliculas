@@ -2,105 +2,116 @@
 
 Trabajo final para la materia de Inteligencia Artificial de la carrera de Ingeniería en Computación de la UNRN.
 
-## Consigna del Trabajo Práctico Final
+## Descripción del Proyecto
 
-Proponer un proyecto usando algún algoritmo de machine learning. El proyecto de IA debe ser de aplicación, es decir, una solución práctica a un problema real o ficticio. El mismo debe tener en cuenta la teoría vista en clase.
+Este proyecto implementa un **sistema de recomendación de películas** utilizando **filtrado colaborativo item-item**. El algoritmo recomienda películas a los usuarios basándose en la similitud con otras películas que fueron valorado positivamente en el pasado por otros usuarios.
 
-Una vez finalizado el proyecto, se deberán entregar los siguientes documentos:
-
-a) **Programas fuentes** indicando el framework utilizado y el dataset, describiendo los pasos usados para limpiar el mismo.
-
-b) **Video explicando la funcionalidad** del desarrollo, es decir, su funcionamiento. Dicha exposición deberá ser acompañada mediante un PPT donde se explicará qué parte de la teoría se usó y se mostrará en el código fuente.
-
-c) **Presentar las métricas** que avalen los resultados que se obtienen.
-
-d) Es un **trabajo individual**.
-
-e) **Fecha de entrega TP Final:** 29 de octubre de 2025. **Recuperación de entrega:** 12 de noviembre de 2025.
+La similitud entre películas se calcula utilizando la métrica de **similitud del coseno**, que determina qué tan parecidas son dos películas en función de las calificaciones que fueron recibiendo de los mismos usuarios a traves del tiempo.
 
 -----
 
 ## Dataset Utilizado
 
-Para este proyecto, se utilizaron dos archivos CSV descargados de MovieLens:
+Para este proyecto, se utilizaron dos archivos CSV del dataset de [MovieLens](https://www.google.com/search?q=https://groulens.org/datasets/movielens/):
 
-  * **`ratings.csv`**: Tiene las valoraciones que los usuarios fueron dando a las películas. Originalmente con 3 millones de entradas, las filtre para trabajar con los 1000 usuarios más activos y las 1000 películas más valoradas para optimizar el rendimiento.
+  * **`ratings.csv`**: Tiene millones de calificaciones (`userId`, `movieId`, `rating`) que los usuarios han dado a las películas.
+  * **`movies.csv`**: Tiene la información de las películas (`movieId`, `title`, `genres`).
 
-      * **Estructura**: `userId`, `movieId`, `rating`, `timestamp`
-
-  * **`movies.csv`**: Contiene la información de las películas. El dataset original cuenta con 90 mil películas.
-
-      * **Estructura**: `movieId`, `title`, `genres`
+Para optimizar el rendimiento computacional, el dataset fue filtrado para trabajar con un subconjunto de los **1000 usuarios más activos** y las **1000 películas más valoradas**.
 
 -----
 
-## Código y Desarrollo
+## Frameworks Utilizados
 
-El sistema de recomendación se desarrolló en Python utilizando las librerías **Pandas** para la manipulación de datos y **Scikit-learn** para el cálculo de la similitud del coseno.
+  * **Python 3**
+  * **Pandas**: Para la manipulación y análisis de datos.
+  * **Scikit-learn**: Para el cálculo de la similitud del coseno.
+  * **Pickle**: Para serializar y guardar el modelo entrenado.
 
-El algoritmo es un **sistema de recomendación basado en filtrado colaborativo item-item**. Este programa recomienda películas a los usuarios basándose en la similitud entre las películas que fueron valoradas positivamente en el pasado y otras películas del catálogo.
+-----
 
-A continuación el código principal del proyecto:
+## Estructura del Proyecto
 
-```python
-import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
+El proyecto está organizado en tres scripts principales para separar las fases de entrenamiento, evaluación y uso práctico:
 
-# Carga de datasets
-ratings = pd.read_csv("ratings.csv")
-movies = pd.read_csv("movies.csv")
+  * **`entrenar_modelo.py`**:
 
-# Reducción del tamaño del dataset para optimizar el rendimiento (El dataset tenia muchas entradas)
-top_movies = ratings['movieId'].value_counts().head(1000).index
-top_users = ratings['userId'].value_counts().head(1000).index
-ratings_small = ratings[ratings['movieId'].isin(top_movies) & ratings['userId'].isin(top_users)]
+      * **Propósito**: Realizar el trabajo pesado de procesar los datos, construir la matriz usuario-película y calcular la matriz de similitud.
+      * **Resultado**: Guarda el modelo entrenado (`modelo_similitud.pkl`) y el DataFrame de películas (`movies_df.pkl`) para su uso posterior. Se ejecuta una sola vez.
 
-# Creación de la matriz usuario-ítem
-user_item_matrix = ratings_small.pivot_table(index='userId', columns='movieId', values='rating').fillna(0)
+  * **`evaluar_modelo.py`**:
 
-# Cálculo de la similitud del coseno entre películas
-cosine_sim = cosine_similarity(user_item_matrix.T)
-cosine_sim_df = pd.DataFrame(cosine_sim, index=user_item_matrix.columns, columns=user_item_matrix.columns)
+      * **Propósito**: Realizar una evaluación académica del rendimiento del modelo. Divide los datos en conjuntos de entrenamiento (80%) y prueba (20%) para calcular las métricas de rendimiento.
+      * **Resultado**: Imprime en consola la **Precisión@10** y el **Recall@10** del modelo.
 
-def recomendar_peliculas(movie_title, movies_df, similarity_df, top_n=5):
-    """
-    Función que recomienda películas basadas en la similitud del coseno.
-    """
-    movie_id = movies_df[movies_df['title'] == movie_title]['movieId'].values
-    if len(movie_id) == 0:
-        return f"La película '{movie_title}' no se encontró en el dataset."
-    
-    movie_id = movie_id[0]
-    
-    # Obtener películas similares y ordenarlas
-    similar_movies = similarity_df[movie_id].sort_values(ascending=False)
-    similar_movies = similar_movies.drop(movie_id) # Excluir la película elegida
+  * **`recomendar_peliculas.py`**:
 
-    # Obtener los títulos de las películas más similares
-    top_movies = similar_movies.head(top_n).index
-    top_movie_titles = movies_df[movies_df['movieId'].isin(top_movies)]['title'].values
-    
-    return list(top_movie_titles)
+      * **Propósito**: Es la aplicación final. Carga el modelo pre-entrenado y genera recomendaciones de películas de forma rápida para un título específico.
+      * **Resultado**: Muestra una lista de 5 películas recomendadas.
 
-# Ejemplo de uso
-pelicula = "Star Wars: Episode IV - A New Hope (1977)"
-recomendadas = recomendar_peliculas(pelicula, movies, cosine_sim_df)
-print(f"Películas recomendadas para '{pelicula}':\n", recomendadas)
+-----
+
+## Instalación y Uso
+
+### 1\. Prerrequisitos
+
+Hay que tener Python 3 instalado. Despues, instala las librerías necesarias:
+
+```bash
+pip install pandas scikit-learn
+```
+
+### 2\. Paso 1: Entrenar el Modelo
+
+Ejecuta este script primero. Va a procesar los datos y genera los archivos del modelo.
+
+```bash
+python entrenar_modelo.py
+```
+
+### 3\. Paso 2: Obtener Recomendaciones
+
+Una vez que el modelo está entrenado, podes ejecutar este script para obtener recomendaciones.
+
+```bash
+python recomendar_peliculas.py
+```
+
+Por defecto, tiene recomendaciones para "Star Wars: Episode IV - A New Hope (1977)". Podes editar el archivo para cambiar la película.
+
+```bash 
+    pelicula_ejemplo = "Star Wars: Episode IV - A New Hope (1977)"
 ```
 
 -----
 
-## Resultados y Métricas
+## Evaluación y Métricas 📊
 
-En esta sección se van a presentar las métricas utilizadas para evaluar el rendimiento del sistema de recomendación. *(agregar las métricas, por ejemplo, Precisión, Recall, F1-Score, etc., y los resultados obtenidos)*.
+Para validar el rendimiento del modelo, se uso el script `evaluar_modelo.py`. Los resultados obtenidos son los siguientes:
+
+  * **Precisión @10**: `0.0852`
+  * **Recall @10**: `0.0174`
+
+### Significado de las Métricas
+
+  * **Precisión**: Indica que de cada 10 películas que el sistema recomienda, aproximadamente el **8.5%** fueron relevantes para el usuario (es decir, casi 1 de cada 10 le acerto). Mide la **calidad** y importancia de las recomendaciones.
+
+  * **Recall**: Muestra que el modelo fue capaz de encontrar el **1.7%** del total de películas que a un usuario le podrían haber gustado de todo el catálogo. Mide la **cobertura** y el alcance del modelo para descubrir ítems relevantes.
+
+Estos valores son esperables para un sistema de recomendación de filtrado colaborativo, y queda demostrado que el modelo captura patrones de preferencia mejores que el azar.
+
+Para obtener estos mismos resultados, ejecuta:
+
+```bash
+python evaluar_modelo.py
+```
 
 -----
 
 ## Video y Presentación
 
-  * **Video Explicativo**: [Link al video] 
+  * **Video Explicativo**: [Link al video]
   * **Presentación PPT**: [Link a la presentación]
-  * **Link del dataset**: https://grouplens.org/datasets/movielens/
 
 -----
 
