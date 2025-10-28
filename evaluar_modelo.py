@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
 
 print("Iniciando la evaluación del modelo...")
 
@@ -49,7 +52,7 @@ def obtener_recomendaciones_ids(movie_id, similarity_df, top_n=10):
     top_movies_ids = similar_movies.head(top_n).index
     return list(top_movies_ids)
 
-k = 10 
+k = 10
 precisions = []
 recalls = []
 
@@ -84,6 +87,54 @@ for user_id, group in test_data.groupby('userId'):
 average_precision = np.mean(precisions) if precisions else 0
 average_recall = np.mean(recalls) if recalls else 0
 
+os.makedirs("graficas", exist_ok=True)
+
+# Histograma de precisión
+plt.figure(figsize=(8, 5))
+sns.histplot(precisions, bins=20, color='skyblue', edgecolor='black')
+plt.title(f"Distribución de Precisión @{k}")
+plt.xlabel("Precisión")
+plt.ylabel("Cantidad de usuarios")
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig("graficas/hist_precision.png")
+plt.close()
+
+# Histograma de recall
+plt.figure(figsize=(8, 5))
+sns.histplot(recalls, bins=20, color='salmon', edgecolor='black')
+plt.title(f"Distribución de Recall @{k}")
+plt.xlabel("Recall")
+plt.ylabel("Cantidad de usuarios")
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig("graficas/hist_recall.png")
+plt.close()
+
+# Boxplots comparativos
+plt.figure(figsize=(6, 5))
+sns.boxplot(data=[precisions, recalls], palette=["skyblue", "salmon"])
+plt.xticks([0, 1], [f"Precisión @{k}", f"Recall @{k}"])
+plt.title("Distribución de métricas por usuario")
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig("graficas/boxplot_metrics.png")
+plt.close()
+
+# Curva promedio Precisión–Recall
+plt.figure(figsize=(6, 5))
+plt.scatter(recalls, precisions, color="purple", alpha=0.6, label="Usuarios")
+plt.axhline(average_precision, color='blue', linestyle='--', label='Precisión promedio')
+plt.axvline(average_recall, color='red', linestyle='--', label='Recall promedio')
+plt.title(f"Curva Precisión–Recall @{k}")
+plt.xlabel("Recall")
+plt.ylabel("Precisión")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig("graficas/precision_recall_curve.png")
+plt.close()
+
 print("-" * 40)
 print("✅ EVALUACIÓN COMPLETADA")
 print("-" * 40)
@@ -94,3 +145,4 @@ print("-" * 40)
 print("\n**Definiciones:**")
 print(f"**Precisión**: De cada {k} películas recomendadas, {average_precision:.1%} fueron relevantes para el usuario.")
 print(f"**Recall**: El modelo logró encontrar el {average_recall:.1%} del total de películas relevantes para el usuario.")
+print("\n✅ Gráficas generadas y guardadas en la carpeta 'graficas/'")
