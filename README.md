@@ -112,7 +112,7 @@ python evaluar_modelo.py
 
 ## Video y Presentación
 
-  * **Video Explicativo**: [Link al video]
+  * **Video Explicativo**: [\[Link al video\]](https://youtu.be/aDRg4EJzN5I)
   * **Presentación PPT**: [\[Link a la presentación\]](https://drive.google.com/file/d/1OV2odYlhWNhdh-G5OWaB0gDuRwEZ8RQI/view?usp=sharing)
 
 -----
